@@ -1,6 +1,6 @@
 {
     "id": "backstory-generator",
-    "title": "Character Back-story Generator",
+    "title": "Character Backstory Generator",
     "description": "Generates character back-stories from basic input, using OpenAI.",
     "version": "1.0.0",
     "authors": [
