@@ -1,0 +1,71 @@
+<div class="backstory-wait-overlay" style="display: none;">
+    <div class="backstory-wait-text">Generating the backstory<span class="dots">...</span></div>
+</div>
+<form>
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" value="{{name}}" />
+    </div>
+    <div class="form-group">
+        <label>Gender</label>
+        <input type="text" name="gender" value="{{gender}}" />
+    </div>
+    <div class="form-group">
+        <label>Age</label>
+        <input type="text" name="age" value="{{age}}" />
+    </div>
+    <div class="form-group">
+        <label>Race / Ancestry</label>
+        <input type="text" name="origin" value="{{origin}}" />
+    </div>
+    <div class="form-group">
+        <label>Class</label>
+        <input type="text" name="charClass" value="{{charClass}}" />
+    </div>
+    <div class="form-group">
+        <label>Tone / Theme (optional)</label>
+        <input type="text" name="tone" value="{{tone}}" placeholder="E.g., brooding, cheerful, survivor of trauma, etc." />
+        <p class="hint">
+            Used to guide the character's personality, voice, or emotional outlook. This influences how the backstory is written.
+            Examples: grim and stoic, cheerful and naive, sardonic trickster, haunted by loss, bloodthirsty warrior, secretive mystic, cursed legacy.
+        </p>
+    </div>
+    <div class="form-group">
+        <label>World or Regional Context (optional)</label>
+        <textarea name="worldContext" rows="4" placeholder="Enter lore, world details, cultural influences...">{{worldContext}}</textarea>
+        <p class="hint">
+            Used to provide a shared setting reference for all generated backstories. 
+            Leave alone to use the default from module settings.
+            Add more text to provide additional context, for example the character's tribe, nation, home town, year of birth, etc.
+        </p>
+    </div>
+    <div class="form-group">
+        <label for="genre">Genre</label>
+        <select name="genre" {{#unless genreIsCustom}}disabled{{/unless}}>
+            <option value="sword_sorcery" {{#if (eq genre "sword_sorcery")}}selected{{/if}}>Sword & Sorcery</option>
+            <option value="high_fantasy" {{#if (eq genre "high_fantasy")}}selected{{/if}}>High Fantasy</option>
+            <option value="grimdark" {{#if (eq genre "grimdark")}}selected{{/if}}>Grimdark</option>
+            <option value="noble_bright" {{#if (eq genre "noble_bright")}}selected{{/if}}>Noblebright</option>
+            <option value="weird_fantasy" {{#if (eq genre "weird_fantasy")}}selected{{/if}}>Weird Fantasy</option>
+            <option value="science_fantasy" {{#if (eq genre "science_fantasy")}}selected{{/if}}>Science Fantasy</option>
+            <option value="custom" {{#if (eq genre "custom")}}selected{{/if}}>Custom</option>
+        </select>
+        </div>
+
+        <div class="form-group" {{#unless genreIsCustom}}style="display:none;"{{/unless}}>
+        <label for="customGenre">Custom Genre Description</label>
+        <input type="text" name="customGenre" value="{{customGenre}}" placeholder="E.g., Dieselpunk Western, Mythic Fairy Tale..." />
+        <p class="hint">Used only if genre is set to "Custom"</p>
+    </div>
+
+    <div class="form-group">
+    <label>
+        <input type="checkbox" name="saveToBio" />
+        Save result to biography
+    </label>
+    </div>
+
+    <footer class="sheet-footer flexrow">
+        <button type="submit" class="dialog-button default">Generate Backstory</button>
+    </footer>
+</form>
