@@ -49,6 +49,7 @@ In **Module Settings**, you can:
 - Set a default **genre preset** (e.g., Sword & Sorcery, Weird Fantasy).
 - Define a **world context** to inform the tone and content of all generated backstories.
 
+> 🗂 See [System Configurations](./system-configurations.md) for working examples in Hyperborea, PF2E, OSE, and more.
 ---
 
 ## Usage
