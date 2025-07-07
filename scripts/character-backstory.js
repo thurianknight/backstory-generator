@@ -23,6 +23,14 @@ Hooks.once("init", async () => {
         },
         default: "gpt-3.5-turbo"
     });
+    game.settings.register("backstory-generator", "showWelcomeMessage", {
+        name: "Show Welcome Message on World Load",
+        hint: "Show a quick-start guide in the chat log each time the world loads.",
+        scope: "client",
+        config: true,
+        default: true,
+        type: Boolean
+    });
 
     game.settings.register("backstory-generator", "path.age", {
         name: "Character Age Path",
@@ -108,6 +116,41 @@ Hooks.once("ready", () => {
         icon: "fas fa-feather-alt",
         type: BackstoryForm,
         restricted: false
+    });
+
+    // Show welcome message in chat, if enabled
+    const shouldShow = game.settings.get("backstory-generator", "showWelcomeMessage");
+    if (!shouldShow) return;
+
+    let gm_content = ""
+    let all_content = "<h2>📜 Character Backstory Generator</h2>";
+
+    if (game.user.isGM) {
+        gm_content = `
+            <p><strong>Configuration:</strong><br>
+            In <em>Module Settings</em>, you can:
+            <ul>
+            <li>Set your OpenAI API key.</li>
+            <li>Choose which model to use (e.g., <code>gpt-3.5-turbo</code>, <code>gpt-4o-mini</code>).</li>
+            <li>Update the data paths to character info fields.</li>
+            <li>Refer to <a href='https://github.com/thurianknight/backstory-generator/blob/main/system-configurations.md'>system-configurations.md</a> for known system mappings.</li>
+            </ul></p>`
+    }
+    all_content += gm_content + `
+        <p><strong>Usage:</strong><br>
+        <ul>
+        <li>Open a character sheet (Actor).</li>
+        <li>Click the <strong>“Backstory”</strong> button in the title bar.</li>
+        <li>Verify or fill in basic details (age, gender, ancestry, class, tone).</li>
+        <li>Click <strong>Generate Backstory</strong>.</li>
+        </ul>
+        <p>The result is a vivid, multi-paragraph character history, rooted in your world, written in your tone.</p>
+    `;
+
+    ChatMessage.create({
+        user: game.user.id,
+        whisper: [game.user.id],
+        content: all_content
     });
 
 });
