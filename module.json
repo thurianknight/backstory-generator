@@ -2,7 +2,7 @@
     "id": "backstory-generator",
     "title": "Character Backstory Generator",
     "description": "Generates character back-stories from basic input, using OpenAI.",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "authors": [
         {
             "name": "ThurianKnight",

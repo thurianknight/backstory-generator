@@ -1,5 +1,3 @@
-// File: scripts/character-backstory.js
-
 Hooks.once("init", async () => {
     game.settings.register("backstory-generator", "openaiKey", {
         name: "OpenAI API Key",
@@ -155,35 +153,72 @@ Hooks.once("ready", () => {
 
 });
 
-Hooks.on("renderActorSheet", (sheet, html, data) => {
+Hooks.on("renderActorSheet", async (sheet, html, data) => {
     // Only for type "character"
     if (sheet.actor?.type !== "character") return;
+    // Skip if the sheet is minimized
+    if (sheet.minimized) return;
 
-    // Avoid adding the button multiple times
+    // Avoid adding a button multiple times
     const existing = html.closest('.app').find('.backstory-generator');
     if (existing.length) return;
 
+    // Check if the generator has been used before
+    const generatorUsed = await sheet.actor?.getFlag("backstory-generator", "generatorUsed");
+    if (generatorUsed) {
+        // If generator has been used before, show a reset button
+        this.addGeneratorReset(sheet, html);
+        return;
+    } else {
+        // If it hasn't been used before, add the main generator button
+        this.addGeneratorButton(sheet, html);
+    }
+});
+
+async function addGeneratorReset(sheet, html) {
+    console.log("Adding Backstory Generator reset button to character sheet");
+    // Create the button
+    const resetButton = $(
+        `<a class="backstory-generator">
+        <i class="fas fa-feather-alt" title="Reset Backstory Generator"></i></a>`
+    );
+    resetButton.css({ margin: "5px 5px", display: "inline-block" });
+
+    // Handle button click
+    resetButton.on("click", async () => {
+        await sheet.actor?.unsetFlag("backstory-generator", "generatorUsed");
+        sheet.render();
+        ui.notifications.info("Backstory Generator reset. You can now generate a new backstory.");
+    });
+
+    // Insert into sheet header
+    const titleElement = html.closest('.app').find('.window-title');
+    if (titleElement.length) {
+        titleElement.after(resetButton);
+    }
+}
+
+function addGeneratorButton(sheet, html) {
+    console.log("Adding Backstory Generator button to character sheet");
     // Create the button
     const button = $(
-        `<a class="backstory-generator" title="Generate Character Backstory">
-        <i class="fas fa-feather-alt"></i> Backstory
-        </a>`
+        `<a class="backstory-generator">
+        <i class="fas fa-feather-alt" title="Generate character backstory"></i> 
+        <span title="Generate character backstory">Backstory</span></a>`
     );
+    button.css({ margin: "5px 5px", display: "inline-block" });
 
     // Handle button click
     button.on("click", () => {
         game.hyp3eBackstoryGenerator?.showForm(sheet.actor);
     });
-    // button.click(async () => await openBackstoryDialog(app.object));
-    // html.closest(".app").find(".backstory-generator").remove();
-    // html.closest(".app").find(".window-header .window-title").after(button);
 
     // Insert into sheet header
     const titleElement = html.closest('.app').find('.window-title');
     if (titleElement.length) {
         titleElement.after(button);
     }
-});
+}
 
 class BackstoryForm extends FormApplication {
     constructor(actor) {
@@ -269,6 +304,9 @@ class BackstoryForm extends FormApplication {
                 content: `<div style="white-space: normal;">${formatted}</div>`,
                 buttons: { ok: { label: "OK" } }
             }).render(true);
+
+            // Mark the Generator as used
+            await this.actor?.setFlag("backstory-generator", "generatorUsed", true);
 
             // Save to actor biography if requested
             if (formData.saveToBio && this.actor) {
