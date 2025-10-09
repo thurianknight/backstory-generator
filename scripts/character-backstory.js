@@ -1,4 +1,24 @@
+/**
+ * Universal actor sheet render hook for both ApplicationV1 and ApplicationV2.
+ *
+ * @param {Function} callback - Function that receives (app, html)
+ *                              when an actor sheet finishes rendering.
+ */
+function onAnyActorSheetRendered(callback) {
+    // For legacy (Application V1)
+    Hooks.on("renderActorSheet", (app, html) => {
+        callback(app, html);
+    });
+
+    // For new (Application V2)
+    Hooks.on("renderActorSheetV2", (app, html) => {
+        callback(app, html);
+    });
+}
+
 Hooks.once("init", async () => {
+    console.log("[Backstory Generator] Initializing module...");
+
     game.settings.register("backstory-generator", "openaiKey", {
         name: "OpenAI API Key",
         hint: "Enter your personal OpenAI API key",
@@ -97,15 +117,20 @@ Hooks.once("init", async () => {
         default: "",
         multiline: true
     });
-
-    await loadTemplates(["modules/backstory-generator/templates/character-form.html"]);
-
 });
 
 Hooks.once("ready", () => {
+    console.log("[Backstory Generator] Ready and waiting for actor sheets...");
+
     game.hyp3eBackstoryGenerator = {
         showForm: (actor = null) => new BackstoryForm(actor).render(true)
     };
+
+    // NEW (works for both V1 and V2)
+    onAnyActorSheetRendered(async (app, html) => {
+        if (app.actor?.type !== "character") return;
+        await insertBackstoryButton(app, html);
+    });
 
     // Optional: add to UI
     game.settings.registerMenu("backstory-generator", "openForm", {
@@ -150,71 +175,64 @@ Hooks.once("ready", () => {
         whisper: [game.user.id],
         content: all_content
     });
-
 });
 
-Hooks.on("renderActorSheet", async (sheet, html, data) => {
+async function insertBackstoryButton(app, html) {
+    console.log("[Backstory Generator] Actor sheet rendering...", app, html)
     // Only for type "character"
-    if (sheet.actor?.type !== "character") return;
-    // Skip if the sheet is minimized
-    if (sheet.minimized) return;
+    if (app.actor?.type !== "character") return;
 
     // Avoid adding a button multiple times
-    const existing = html.closest('.app').find('.backstory-generator');
+    const titleBar = html.closest('.app') || html.closest('.application')
+    if (!titleBar) return;
+    const existing = $(titleBar).find('.backstory-generator');
     if (existing.length) return;
 
-    // Check if the generator has been used before
-    const generatorUsed = await sheet.actor?.getFlag("backstory-generator", "generatorUsed");
-    if (generatorUsed) {
-        // If generator has been used before, show a reset button
-        this.addGeneratorReset(sheet, html);
-        return;
-    } else {
-        // If it hasn't been used before, add the main generator button
-        this.addGeneratorButton(sheet, html);
-    }
-});
-
-async function addGeneratorReset(sheet, html) {
-    console.log("Adding Backstory Generator reset button to character sheet");
-    // Create the button
-    const resetButton = $(
-        `<a class="backstory-generator">
-        <i class="fas fa-feather-alt" title="Reset Backstory Generator"></i></a>`
-    );
-    resetButton.css({ margin: "5px 5px", display: "inline-block" });
-
-    // Handle button click
-    resetButton.on("click", async () => {
-        await sheet.actor?.unsetFlag("backstory-generator", "generatorUsed");
-        sheet.render();
-        ui.notifications.info("Backstory Generator reset. You can now generate a new backstory.");
-    });
-
-    // Insert into sheet header
-    const titleElement = html.closest('.app').find('.window-title');
-    if (titleElement.length) {
-        titleElement.after(resetButton);
-    }
+    // Add the generator button to the title bar
+    await this.addGeneratorButton(app, html);
 }
 
-function addGeneratorButton(sheet, html) {
-    console.log("Adding Backstory Generator button to character sheet");
-    // Create the button
-    const button = $(
-        `<a class="backstory-generator">
-        <i class="fas fa-feather-alt" title="Generate character backstory"></i> 
-        <span title="Generate character backstory">Backstory</span></a>`
-    );
-    button.css({ margin: "5px 5px", display: "inline-block" });
+function addGeneratorButton(app, html) {
+    console.log("[Backstory Generator] Adding Backstory Generator button to character sheet");
 
-    // Handle button click
-    button.on("click", () => {
-        game.hyp3eBackstoryGenerator?.showForm(sheet.actor);
-    });
+    let button;
+
+    if (app instanceof foundry.applications.api.ApplicationV2) {
+        // Configure the button for AppV2
+        button = document.createElement('button');
+        button.type = "button";
+        button.classList.add('header-control', 'fas', 'fa-feather-alt', 'backstory-generator', 'icon');
+        button.dataset.tooltip = "Generate character backstory";
+        // Handle the button click event
+        button.dataset.action = "showForm";
+        console.log("[Backstory Generator] App V2 button:", button);
+        app.options.actions.showForm ??= function (_event, _el) {
+            game.hyp3eBackstoryGenerator?.showForm(app.actor);
+        };
+    } else {
+        // Configure the button for AppV1
+        button = document.createElement('a');
+        // button.classList.add('header-button', 'control', 'backstory-generator', 'icon');
+        button.classList.add('control', 'backstory-generator', 'icon');
+        button.dataset.tooltip = "Generate character backstory";
+        // Add a Font-Awesome icon to the button
+        const i = document.createElement('i');
+        i.classList.add('fas', 'fa-feather-alt');
+        i.inert = true;
+        button.append(i);
+        // Handle the button click event
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            game.hyp3eBackstoryGenerator?.showForm(app.actor);
+        });
+    }
 
     // Insert into sheet header
-    const titleElement = html.closest('.app').find('.window-title');
+    const titleBar = html.closest('.app') || html.closest('.application');
+    if (!titleBar) return;
+    const titleElement = $(titleBar).find('.window-title');
     if (titleElement.length) {
         titleElement.after(button);
     }
@@ -292,7 +310,7 @@ class BackstoryForm extends FormApplication {
 
             const json = await response.json();
             if (!response.ok) {
-                console.error("OpenAI API error:", json);
+                console.error("[Backstory Generator] OpenAI API error:", json);
                 ui.notifications.error(`OpenAI API Error: ${json.error?.message}`);
                 return;
             }
@@ -321,7 +339,7 @@ class BackstoryForm extends FormApplication {
             }
         } catch (err) {
             ui.notifications.error("Error querying ChatGPT.");
-            console.error(err);
+            console.error("[Backstory Generator]", err);
         } finally {
             overlay.hide();
         }
