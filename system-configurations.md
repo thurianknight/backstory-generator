@@ -61,11 +61,11 @@ The **Character Backstory Generator** and **Personality Oracle** modules can wor
 
 ## D&D 5E (dnd5e)
 
-⚠️ Partial compatibility.
-
-- The module cannot directly access the character sheet fields due to how the system structures actor data.
-- Players can still **manually fill in the fields** in the Oracle or Backstory form, then copy/paste the result into their biography.
-- A future compatibility patch may add support.
+- **Age:** `system.details.age`
+- **Gender:** `system.details.gender`
+- **Race / Ancestry:** `system.details.race`
+- **Class:** _(class stored as keyed object, must be entered manually)_
+- **Biography:** `system.details.biography.value`
 
 ---
 
