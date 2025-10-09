@@ -123,7 +123,7 @@ Hooks.once("ready", () => {
     console.log("[Backstory Generator] Ready and waiting for actor sheets...");
 
     game.hyp3eBackstoryGenerator = {
-        showForm: (actor = null) => new BackstoryForm(actor).render(true)
+        showBackstoryForm: (actor = null) => new BackstoryForm(actor).render(true)
     };
 
     // NEW (works for both V1 and V2)
@@ -204,10 +204,10 @@ function addGeneratorButton(app, html) {
         button.classList.add('header-control', 'fas', 'fa-feather-alt', 'backstory-generator', 'icon');
         button.dataset.tooltip = "Generate character backstory";
         // Handle the button click event
-        button.dataset.action = "showForm";
+        button.dataset.action = "showBackstoryForm";
         console.log("[Backstory Generator] App V2 button:", button);
-        app.options.actions.showForm ??= function (_event, _el) {
-            game.hyp3eBackstoryGenerator?.showForm(app.actor);
+        app.options.actions.showBackstoryForm ??= function (_event, _el) {
+            game.hyp3eBackstoryGenerator?.showBackstoryForm(app.actor);
         };
     } else {
         // Configure the button for AppV1
@@ -225,7 +225,7 @@ function addGeneratorButton(app, html) {
             event.preventDefault();
             event.stopPropagation();
             event.stopImmediatePropagation();
-            game.hyp3eBackstoryGenerator?.showForm(app.actor);
+            game.hyp3eBackstoryGenerator?.showBackstoryForm(app.actor);
         });
     }
 
@@ -245,7 +245,7 @@ class BackstoryForm extends FormApplication {
     }
 
     static get defaultOptions() {
-        return mergeObject(super.defaultOptions, {
+        return foundry.utils.mergeObject(super.defaultOptions, {
             id: "backstory-form",
             title: "Character Backstory Generator",
             template: "modules/backstory-generator/templates/character-form.html",
