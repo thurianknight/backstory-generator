@@ -14,6 +14,7 @@ The **Character Backstory Generator** and **Personality Oracle** modules can wor
 - **Age:** `system.details.age`
 - **Gender:** `system.details.gender`
 - **Race / Ancestry:** `system.details.race`
+- **Homeland:** `system.details.homeland`
 - **Class:** `system.details.class`
 - **Biography:** `system.biography`
 
@@ -24,6 +25,7 @@ The **Character Backstory Generator** and **Personality Oracle** modules can wor
 - **Age:** `system.details.age`
 - **Gender:** _(not stored by default)_
 - **Race / Ancestry:** _(not stored by default)_
+- **Homeland:** _TBD_
 - **Class:** `system.details.class`
 - **Biography:** `system.details.description`
 
@@ -34,6 +36,7 @@ The **Character Backstory Generator** and **Personality Oracle** modules can wor
 - **Age:** _(not stored by default)_
 - **Gender:** _(not stored by default)_
 - **Race / Ancestry:** _(stored in `system.details.class`, e.g. "Elf", if applicable)_
+- **Homeland:** _TBD_
 - **Class:** `system.details.class`
 - **Biography:** `system.details.biography`
 
@@ -44,6 +47,7 @@ The **Character Backstory Generator** and **Personality Oracle** modules can wor
 - **Age:** `system.details.age.value`
 - **Gender:** `system.details.gender.value`
 - **Race / Ancestry:** `system.details.ancestry.name`
+- **Homeland:** _TBD_
 - **Class:** `system.details.class.name`
 - **Biography:** `system.details.biography.backstory`
 
@@ -54,6 +58,7 @@ The **Character Backstory Generator** and **Personality Oracle** modules can wor
 - **Age:** _(not stored by default)_
 - **Gender:** _(not stored by default)_
 - **Race / Ancestry:** `system.details.background`
+- **Homeland:** _TBD_
 - **Class:** `system.details.class`
 - **Biography:** `system.details.biography`
 
@@ -64,6 +69,7 @@ The **Character Backstory Generator** and **Personality Oracle** modules can wor
 - **Age:** `system.details.age`
 - **Gender:** `system.details.gender`
 - **Race / Ancestry:** `system.details.race`
+- **Homeland:** _TBD_
 - **Class:** _(class stored as keyed object, must be entered manually)_
 - **Biography:** `system.details.biography.value`
 
@@ -74,7 +80,7 @@ The **Character Backstory Generator** and **Personality Oracle** modules can wor
 Know a system not listed here? Please open a GitHub issue or submit a pull request with:
 
 - The system ID
-- The data paths to age, gender, race/ancestry, class, and biography (if applicable)
+- The data paths to age, gender, race/ancestry, homeland, class, and biography (if applicable)
 - Any notes on quirks or limitations
 
 ---
