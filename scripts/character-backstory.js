@@ -74,6 +74,14 @@ Hooks.once("init", async () => {
         type: String,
         default: "system.details.race"
     });
+    game.settings.register("backstory-generator", "path.homeland", {
+      name: "Character Homeland Path",
+      hint: "Data path to the character's homeland (e.g., system.details.homeland)",
+      scope: "world",
+      config: true,
+      type: String,
+      default: "system.details.homeland"
+    });
     game.settings.register("backstory-generator", "path.charClass", {
         name: "Character Class Path",
         hint: "Data path to the character's class or profession (e.g., system.details.class)",
@@ -271,6 +279,7 @@ class BackstoryForm extends FormApplication {
             data.age = this.getValueAtPath(actor, path("age")) ?? "";
             data.gender = this.getValueAtPath(actor, path("gender")) ?? "";
             data.origin = this.getValueAtPath(actor, path("origin")) ?? "";
+            data.homeland = this.getValueAtPath(actor, path("homeland")) ?? "";
             data.charClass = this.getValueAtPath(actor, path("charClass")) ?? "";
             data.biography = this.getValueAtPath(actor, path("biography")) ?? "";
             data.tone = "";
@@ -359,9 +368,11 @@ ${worldContext ? `World Context:\n${worldContext}\n\n` : ""}
 - Sex: ${data.gender}
 - Age: ${data.age}
 - Ancestry: ${data.origin}
+- Homeland: ${data.homeland}
 - Class: ${data.charClass}
 - Personality Tone or Theme: ${data.tone}
 
 Avoid generic tropes, use a story-like tone, and return only the backstory text.`;
+
     }
 }
