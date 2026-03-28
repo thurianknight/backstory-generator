@@ -98,10 +98,10 @@ repo = g.get_repo("thurianknight/backstory-generator")
 release_name = f"Release {tag}"
 release = repo.create_git_release(tag=tag, name=release_name, message=f"Pre-release of backstory-generator version {version}", draft=False, prerelease=True)
 
-# Upload system.json
-system_json_path = source_root / "system.json"
-release.upload_asset(str(system_json_path), label="system.json", content_type="application/json")
-print("Uploaded system.json to github release.")
+# Upload module.json
+module_json_path = source_root / "module.json"
+release.upload_asset(str(module_json_path), label="module.json", content_type="application/json")
+print("Uploaded module.json to github release.")
 # Upload backstory-generator.zip
 zip_path = dest.with_suffix('.zip')
 release.upload_asset(str(zip_path), label="backstory-generator.zip", content_type="application/zip")
