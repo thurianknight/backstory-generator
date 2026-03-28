@@ -1,4 +1,10 @@
-.DS_Store
 node_modules/
 dist/
 *.zip
+
+.DS_Store
+.env
+.npmignore
+.nvmrc
+.venv/
+.vscode/
